@@ -1,6 +1,5 @@
 import database as db
 
-
 class applicant:
     def __init__(self):
         pass
