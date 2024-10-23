@@ -1,11 +1,10 @@
 import repository as repo
-from flask import Flask,jsonify, request
+from flask import jsonify
 
 class applicant_usecase:
     def __init__(self):
         self.applicant_repo = repo.applicant()
 
-    
     def load_applicant(self,nr_cpf):
         try:
             if nr_cpf:
@@ -21,7 +20,6 @@ class applicant_usecase:
         
         finally:
             return response
-
 
 class orders:
     def __init__ (self):

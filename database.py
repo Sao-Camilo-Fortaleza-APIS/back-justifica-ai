@@ -1,6 +1,6 @@
+import os
 import pyodbc
 import cx_Oracle
-import os
 from dotenv import load_dotenv
 load_dotenv()
 
