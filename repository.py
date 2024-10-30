@@ -44,11 +44,16 @@ class Orders:
 
         conn = db.connect_oracle_bd()
         try:
+            if aware_p:
+                aware_p = "Aceito"
+            else:
+                aware_p = "Não aceito"
+            
             with conn.cursor() as cursor:
                 cursor.execute(f"select tasy.obter_nome_pf({requester_p}) from dual")
                 nm_applicant = cursor.fetchone()[0]
 
-                title_p = f"Justificativa de ponto: {nm_applicant} - {occurrence_p}"
+                title_p = f"AJUSTE PONTO: {nm_applicant} - {occurrence_p}"
 
                 description_p = f"""Dados Justificativa:\nTermo de Ciência: {aware_p}\nMat: {mat_p}\nNome: {nm_applicant}\nData Ocorrência: {occurrence_p}\nMotivo: {reason_p}\nObservação: {component_p}"""
 
@@ -96,4 +101,24 @@ class Orders:
             cursor.close()
             conn.close()
             response = [{"nr_sequencia": row[0], "ds_localizacao": row[1]} for row in rows]
+            return response
+
+    def get_orders_pendents(self,nm_user):
+        try:
+            conn = db.connect_oracle_bd()
+            with conn.cursor() as cursor:
+                query = f"""SELECT dt_ordem_servico, b.nr_sequencia, tasy.obter_nome_pf(b.cd_pessoa_solicitante)ds_pessoa_solicitante, tasy.obter_desc_man_localizacao(b.nr_seq_localizacao) ds_localizacao, b.ds_dano_breve, b.ds_contato_solicitante, b.nr_grupo_trabalho, b.ds_dano
+                                    FROM TASY.MAN_ORDEM_SERVICO_EXEC A RIGHT JOIN TASY.MAN_ORDEM_SERVICO B ON(A.NR_SEQ_ORDEM = B.NR_SEQUENCIA)
+                                    WHERE B.ie_status_ordem not in 3 and  UPPER(a.nm_usuario_exec) IS NULL
+                                    and b.NR_SEQ_WHEB is null
+                                    and b.nr_grupo_trabalho = 50
+                                    and b.NR_SEQ_LOCALIZACAO in (SELECT nr_seq_localizacao
+                                                                 FROM TASY.MAN_RESP_LOCALIZACAO
+                                                                 WHERE cd_pessoa_resp_localizacao = TASY.HCD_OBTER_CODIGO_USUARIO(:nm_usuario))
+                                    order by nr_sequencia"""
+                cursor.execute(query,{"nm_usuario":nm_user})
+                response = cursor.fetchall()
+        except Exception as e:
+            response = str(e)
+        finally:
             return response
