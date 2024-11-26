@@ -43,13 +43,17 @@ def login():
         login_use_case = usecase.LoginUseCase()
         response = login_use_case.check_credentials(user=username,pwd=password)
         if response == 400:
+            app.logger.info(response)
             return jsonify({"message":"Usuário ou senha incorreto!"}),400
         elif response == 404:
+            app.logger.info(response)
             return jsonify({"message":"Usuário/Senha não localizado!"}),404
         else:
+            app.logger.info(response)
             access_token = create_access_token(identity=response)
             return jsonify({"token":access_token,"user":response}),200
     except Exception as e:
+        app.logger.inf(str(e))
         return jsonify({"message": str(e)}),500
 
 ## LOCALIZADORES ##
@@ -63,6 +67,7 @@ def load_applicant_information(cpf):
         response = jsonify({"message":str(e)}),500
 
     finally:
+        app.logger.info(response)
         return response
     
 @app.route("/sectors", methods=["GET"])
@@ -73,6 +78,7 @@ def get_setor():
     except Exception as e:
         response = jsonify({"message":str(e)}),500
     finally:
+        app.logger.info(response)
         return response
 
 @app.route("/justification/pendents/<nm_user>", methods=['GET'])
@@ -84,6 +90,7 @@ def justification_pendents(nm_user):
     except Exception as e:
         response = jsonify({"message":str(e)}),500
     finally:
+        app.logger.info(response)
         return response
 
 ## AÇÕES ORDENS ##
@@ -107,6 +114,7 @@ def open_order_serv():
         response = jsonify({"message":str(e)}),50
 
     finally:
+        app.logger.info(response)
         return response
     
 @app.route('/justification/manager/action', methods=['POST'])
@@ -124,6 +132,7 @@ def action_manager():
     except Exception as e:
         response = jsonify({"message": str(e)}),501
     finally:
+        app.logger.info(response)
         return response
 
 # Inicie a aplicação
