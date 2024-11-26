@@ -16,7 +16,7 @@ IP_CONNECT_SQL_SERV = os.getenv("SQL_SERVER")
 USER_SQL_SERV = os.getenv("SQL_SERVER_USER")
 PASS_SQL_SERV = os.getenv("SQL_SERVER_PASS")
 DB_SQL_SERV = os.getenv("SQL_SERVER_DATABASE")
-
+SQL_SERVER_DRIVER = os.getenv("SQL_SERVER_DRIVER")
 lib = cx_Oracle.init_oracle_client(INSTANTCLIENT_ORA)
 
 def connect_oracle_bd():
@@ -31,7 +31,7 @@ def connect_oracle_bd():
 
 def connect_sql_server_bd():
     try:
-        connection = pyodbc.connect(f'DRIVER={{SQL Server}};SERVER={IP_CONNECT_SQL_SERV};DATABASE={DB_SQL_SERV};UID={USER_SQL_SERV};PWD={PASS_SQL_SERV}')
+        connection = pyodbc.connect(f'DRIVER={SQL_SERVER_DRIVER};SERVER={IP_CONNECT_SQL_SERV};DATABASE={DB_SQL_SERV};UID={USER_SQL_SERV};PWD={PASS_SQL_SERV}')
     except Exception as e:
         return str(e), 300
     except pyodbc.DatabaseError as ebd:
