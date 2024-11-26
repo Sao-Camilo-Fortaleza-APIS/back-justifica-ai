@@ -6,12 +6,22 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_jwt_extended import (JWTManager, create_access_token, jwt_required, get_jwt_identity,set_access_cookies, unset_jwt_cookies)
 import datetime
+import logging
 
 load_dotenv()
+
+# Configurar o logger para exibir mensagens no stdout
+handler = logging.StreamHandler()
+handler.setLevel(logging.INFO)  # Nível de logging: INFO, DEBUG, WARNING, ERROR, etc.
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
 
 PORT_API = os.getenv("PORT_API")
 
 app = Flask(__name__)
+
+app.logger.addHandler(handler)
+app.logger.setLevel(logging.INFO)
 
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET")
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=12)
