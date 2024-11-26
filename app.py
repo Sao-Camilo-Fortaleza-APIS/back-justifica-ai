@@ -43,17 +43,13 @@ def login():
         login_use_case = usecase.LoginUseCase()
         response = login_use_case.check_credentials(user=username,pwd=password)
         if response == 400:
-            app.logger.info(response)
             return jsonify({"message":"Usuário ou senha incorreto!"}),400
         elif response == 404:
-            app.logger.info(response)
             return jsonify({"message":"Usuário/Senha não localizado!"}),404
         else:
-            app.logger.info(response)
             access_token = create_access_token(identity=response)
             return jsonify({"token":access_token,"user":response}),200
     except Exception as e:
-        app.logger.inf(str(e))
         return jsonify({"message": str(e)}),500
 
 ## LOCALIZADORES ##
