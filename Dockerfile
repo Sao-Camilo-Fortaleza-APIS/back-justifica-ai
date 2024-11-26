@@ -4,17 +4,30 @@ ARG PYTHON_VERSION=3.11.4
 FROM python:${PYTHON_VERSION}-slim as base
 
 ENV PYTHONDONTWRITEBYTECODE=1
-
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies, including gnupg for handling apt keys
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
     unixodbc \
+    unixodbc-dev \
+    libssl-dev \
+    curl \
+    gnupg \
     && rm -rf /var/lib/apt/lists/*
+
+# Install SQL Server ODBC Driver
+RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+    curl -sSL https://packages.microsoft.com/config/ubuntu/20.04/prod.list -o /etc/apt/sources.list.d/mssql-release.list && \
+    apt-get update && ACCEPT_EULA=Y apt-get install -y \
+    msodbcsql17 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Verificar se o driver foi instalado corretamente
+RUN odbcinst -q -d -n "ODBC Driver 17 for SQL Server"
 
 RUN mkdir -p /opt/oracle/
 
@@ -32,7 +45,6 @@ ENV LD_LIBRARY_PATH=/opt/oracle/instantclient:${LD_LIBRARY_PATH}
 ENV ORACLE_HOME=/opt/oracle/instantclient
 
 # Create a non-privileged user that the app will run under.
-# See https://docs.docker.com/go/dockerfile-user-best-practices/
 ARG UID=10001
 RUN adduser \
     --disabled-password \
@@ -43,10 +55,7 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
-# Download dependencies as a separate step to take advantage of Docker's    caching.
-# Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
-# Leverage a bind mount to requirements.txt to avoid having to copy them into
-# into this layer.
+# Install Python dependencies
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
