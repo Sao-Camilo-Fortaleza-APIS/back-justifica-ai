@@ -75,4 +75,4 @@ COPY . .
 EXPOSE 4325
 
 # Run the application.
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:4325", "--access-logfile","-","--log-file","-", "--certfile=/app/certs/cert.pem", "--keyfile=/app/certs/key.pem" "app:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:4325", "--access-logfile","-","--log-file","-", "--certfile=/app/certs/nginx.crt", "--keyfile=/app/certs/nginx.key" "app:app"]
