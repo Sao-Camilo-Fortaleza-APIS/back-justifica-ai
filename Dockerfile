@@ -8,6 +8,9 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
+#Create directory for certificate
+RUN mkdir -p /app/certs
+
 # Install system dependencies, including gnupg for handling apt keys
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
