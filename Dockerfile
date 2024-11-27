@@ -27,14 +27,14 @@ RUN odbcinst -q -d -n "ODBC Driver 17 for SQL Server"
 RUN mkdir -p /opt/oracle/
 
 # Install Oracle Instant Client
-@@ -32,7 +45,6 @@ ENV LD_LIBRARY_PATH=/opt/oracle/instantclient:${LD_LIBRARY_PATH}
+ENV LD_LIBRARY_PATH=/opt/oracle/instantclient:${LD_LIBRARY_PATH}
 ENV ORACLE_HOME=/opt/oracle/instantclient
 
 # Create a non-privileged user that the app will run under.
 ARG UID=10001
 RUN adduser \
     --disabled-password \
-@@ -43,10 +55,7 @@ RUN adduser \
+RUN adduser \
     --uid "${UID}" \
     appuser
 
@@ -42,7 +42,7 @@ RUN adduser \
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
-@@ -61,4 +70,4 @@ COPY . .
+COPY . .
 EXPOSE 4325
 
 # Run the application.
