@@ -24,6 +24,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     update-ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+# Adicionar chave GPG da Microsoft
+RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc
+
 # Instalação do driver ODBC para SQL Server
 RUN apt-get update && apt-get install -y --no-install-recommends gnupg curl ca-certificates && \
     mkdir -p /etc/apt/keyrings && \
