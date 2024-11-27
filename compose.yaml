@@ -7,9 +7,9 @@ services:
     env_file:
       - .env
     restart: always
-
-volumes:
-  - ./certs:/app/certs:
+    
+    volumes:
+    - ./certs:/app/certs
 
 #    environment:
 #      - POSTGRES_SERVER=db
@@ -48,4 +48,3 @@ volumes:
 #secrets:
 #  db-password:
 #    file: db/password.txt
-
