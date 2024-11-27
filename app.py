@@ -133,4 +133,4 @@ def action_manager():
 
 # Inicie a aplicação
 if __name__ == "__main__":
-    app.run(ssl_context=('certs/nginx.crt','certs/nginx.key'), host='0.0.0.0', port=PORT_API, debug=True)
+    app.run(host='0.0.0.0', port=PORT_API, debug=True)
