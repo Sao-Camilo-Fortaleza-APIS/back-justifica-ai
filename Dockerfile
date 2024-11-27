@@ -31,7 +31,7 @@ RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/t
 RUN apt-get update && apt-get install -y --no-install-recommends gnupg curl ca-certificates && \
     mkdir -p /etc/apt/keyrings && \
     curl -sSL https://packages.microsoft.com/keys/microsoft.asc -o /etc/apt/keyrings/microsoft.gpg && \
-    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/ubuntu/20.04/prod focal main" > /etc/apt/sources.list.d/mssql-release.list && \
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/ubuntu/22.04/prod focal main" > /etc/apt/sources.list.d/mssql-release.list && \
     apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
