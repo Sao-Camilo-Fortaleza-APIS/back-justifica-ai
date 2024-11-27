@@ -27,8 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Add Microsoft's GPG key for the ODBC driver
 RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc
 
-# Install ODBC driver for SQL Server using the correct Debian repository for Bullseye (Debian 11)
-RUN echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/microsoft.asc] https://packages.microsoft.com/debian/11/prod stable main" > /etc/apt/sources.list.d/mssql-release.list
+# Use Ubuntu 20.04 (Focal) repository for MS ODBC driver
+RUN echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/microsoft.asc] https://packages.microsoft.com/ubuntu/20.04/prod focal main" > /etc/apt/sources.list.d/mssql-release.list
 
 # Install msodbcsql17 driver
 RUN apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17 && \
