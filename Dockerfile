@@ -1,3 +1,4 @@
+ARG PYTHON_VERSION=3.11.4
 FROM python:${PYTHON_VERSION}-slim as base
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -22,11 +23,22 @@ RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - 
     apt-get update && ACCEPT_EULA=Y apt-get install -y \
     msodbcsql17 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Verificar se o driver foi instalado corretamente
 RUN odbcinst -q -d -n "ODBC Driver 17 for SQL Server"
+
 RUN mkdir -p /opt/oracle/
 
 # Install Oracle Instant Client
+RUN apt-get update && apt-get install -y libaio1 wget unzip && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/2115000/instantclient-basic-linux.x64-21.15.0.0.0dbru.zip && \
+    unzip instantclient-basic-linux.x64-21.15.0.0.0dbru.zip && \
+    rm instantclient-basic-linux.x64-21.15.0.0.0dbru.zip && \
+    mv instantclient_21_15 /opt/oracle/instantclient && \
+    echo /opt/oracle/instantclient > /etc/ld.so.conf.d/oracle-instantclient.conf && \
+    ldconfig
+
+# Set Oracle environment variables
 ENV LD_LIBRARY_PATH=/opt/oracle/instantclient:${LD_LIBRARY_PATH}
 ENV ORACLE_HOME=/opt/oracle/instantclient
 
@@ -34,7 +46,10 @@ ENV ORACLE_HOME=/opt/oracle/instantclient
 ARG UID=10001
 RUN adduser \
     --disabled-password \
-RUN adduser \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
     --uid "${UID}" \
     appuser
 
@@ -42,7 +57,14 @@ RUN adduser \
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
+
+# Switch to the non-privileged user to run the application.
+USER appuser
+
+# Copy the source code into the container.
 COPY . .
+
+# Expose the port that the application listens on.
 EXPOSE 4325
 
 # Run the application.
