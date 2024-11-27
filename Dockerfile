@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 # Create directory for certificate
-RUN mkdir -p /app/certs
+#RUN mkdir -p /app/certs
 
 # Install system dependencies, including gnupg for handling apt keys
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -20,20 +20,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev \
     curl \
     gnupg \
-    ca-certificates && \
-    update-ca-certificates \
+    #ca-certificates && \
+    #update-ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Add Microsoft's GPG key for the ODBC driver
-RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc
+#RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc
 
 # Use Ubuntu 20.04 (Focal) repository for MS ODBC driver
 RUN echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/microsoft.asc] https://packages.microsoft.com/ubuntu/20.04/prod focal main" > /etc/apt/sources.list.d/mssql-release.list
-
 # Install msodbcsql17 driver
 RUN apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
-
 # Verify if the ODBC driver was installed correctly
 RUN odbcinst -q -d -n "ODBC Driver 17 for SQL Server"
 
@@ -76,4 +74,5 @@ COPY . .
 EXPOSE 4325
 
 # Run the application
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:4325", "--access-logfile","-","--log-file","-", "--certfile=/app/certs/nginx.crt", "--keyfile=/app/certs/nginx.key", "app:app"]
+#CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:4325", "--access-logfile","-","--log-file","-", "--certfile=/app/certs/nginx.crt", "--keyfile=/app/certs/nginx.key", "app:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:4325", "--access-logfile","-","--log-file","-","app:app"]
