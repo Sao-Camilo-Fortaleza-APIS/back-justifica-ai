@@ -4,7 +4,7 @@ import usecase
 from flask import Flask,jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
-from flask_jwt_extended import (JWTManager, create_access_token)
+from flask_jwt_extended import (JWTManager, create_access_token, jwt_required)
 import datetime
 import logging
 
@@ -78,7 +78,7 @@ def get_setor():
         return response
 
 @app.route("/justification/pendents/<nm_user>", methods=['GET'])
-#@jwt_required()
+@jwt_required()
 def justification_pendents(nm_user):
     order_usecase = usecase.orders()
     try:
@@ -114,7 +114,7 @@ def open_order_serv():
         return response
     
 @app.route('/justification/manager/action', methods=['POST'])
-#@jwt_required
+@jwt_required()
 def action_manager():
     order_usecase = usecase.orders()
     try:
